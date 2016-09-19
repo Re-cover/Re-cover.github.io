@@ -1,0 +1,727 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/vendors/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/vendors/font-awesome/css/font-awesome.min.css?v=4.4.0" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.0.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="linux,VPS," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="ask·xyz" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.png?v=5.0.1" />
+
+
+
+
+
+
+<meta name="description" content="云端、网盘，如今的人们对于这些字眼早已不再陌生，利用云服务来存储和分享数据资料、衔接工作生活点滴，逐步成为了人们的日常。而墙外网盘的访问速度慢、 墙内网盘的各项『条款』和『政策』更是让个人隐私和随意分享无法得到保障。倘若你有上述苦恼，私有云服务让你多了一个选择。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux VPS利用BT Sync搭建私有云服务">
+<meta property="og:url" content="http://reask.xyz/2016/02/03/Linux-VPS利用BT-Sync搭建私有云服务/index.html">
+<meta property="og:site_name" content="ask·xyz">
+<meta property="og:description" content="云端、网盘，如今的人们对于这些字眼早已不再陌生，利用云服务来存储和分享数据资料、衔接工作生活点滴，逐步成为了人们的日常。而墙外网盘的访问速度慢、 墙内网盘的各项『条款』和『政策』更是让个人隐私和随意分享无法得到保障。倘若你有上述苦恼，私有云服务让你多了一个选择。">
+<meta property="og:image" content="http://ac-wyatmm3p.clouddn.com/RTyRuZJ272jMMD83DYLtHNC.png">
+<meta property="og:image" content="http://ac-wyatmm3p.clouddn.com/E3grYWA1kEjlMHj8iZb3MyC.png">
+<meta property="og:image" content="http://ac-wyatmm3p.clouddn.com/8zvT36I5hQbP1EXjZ8aDE6C.png">
+<meta property="og:updated_time" content="2016-07-24T18:24:42.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Linux VPS利用BT Sync搭建私有云服务">
+<meta name="twitter:description" content="云端、网盘，如今的人们对于这些字眼早已不再陌生，利用云服务来存储和分享数据资料、衔接工作生活点滴，逐步成为了人们的日常。而墙外网盘的访问速度慢、 墙内网盘的各项『条款』和『政策』更是让个人隐私和随意分享无法得到保障。倘若你有上述苦恼，私有云服务让你多了一个选择。">
+<meta name="twitter:image" content="http://ac-wyatmm3p.clouddn.com/RTyRuZJ272jMMD83DYLtHNC.png">
+
+
+
+<script type="text/javascript" id="hexo.configuration">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: 0,
+      author: '博主'
+    }
+  };
+</script>
+
+
+
+
+  <link rel="canonical" href="http://reask.xyz/2016/02/03/Linux-VPS利用BT-Sync搭建私有云服务/"/>
+
+  <title> Linux VPS利用BT Sync搭建私有云服务 | ask·xyz </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">ask·xyz</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'vrPHgsPEb7BziY_EM3M8','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Linux VPS利用BT Sync搭建私有云服务
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time itemprop="dateCreated" datetime="2016-02-03T12:50:23+08:00" content="2016-02-03">
+              2016-02-03
+            </time>
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="https://schema.org/Thing">
+                  <a href="/categories/折腾/" itemprop="url" rel="index">
+                    <span itemprop="name">折腾</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                &nbsp; | &nbsp;
+                <a href="/2016/02/03/Linux-VPS利用BT-Sync搭建私有云服务/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2016/02/03/Linux-VPS利用BT-Sync搭建私有云服务/" itemprop="commentsCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+
+          
+          
+
+          
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>云端、网盘，如今的人们对于这些字眼早已不再陌生，利用云服务来存储和分享数据资料、衔接工作生活点滴，逐步成为了人们的日常。而墙外网盘的访问速度慢、 墙内网盘的各项『条款』和『政策』更是让个人隐私和随意分享无法得到保障。倘若你有上述苦恼，私有云服务让你多了一个选择。</p>
+<a id="more"></a>
+<h2 id="BT-Sync功能介绍"><a href="#BT-Sync功能介绍" class="headerlink" title="BT Sync功能介绍"></a>BT Sync功能介绍</h2><p><strong>BT Sync</strong>是一款由<a href="http://www.bittorrent.com/" target="_blank" rel="external">BitTorrent公司</a>开发的采用BT协议进行文件传输的同步工具，桌面端支持Windows、Mac OS、Linux、FreeBSD，移动端支持iOS、Android、WP，NAS端支持Syology、QNAP等平台。用户几乎可以在任意平台创建同步文件夹进行同步和分享。Sync可以找到设备间最短的通讯路线，假设2台设备均处于同一局域网内，数据的传输将不经过外网，传输速度大大提高。对于已存在文件的修改，Sync将进行增量同步，而不是重新同步整个文件，极大的提升了大文件的同步速度。由于使用BT协议进行数据传输，不会有中心服务器存储用户数据，节点间的数据传输通过加密，只要不泄露同步的密钥，数据不会被截取或审查，安全与隐私得到保障。</p>
+<h2 id="在VPS上部署BT-Sync"><a href="#在VPS上部署BT-Sync" class="headerlink" title="在VPS上部署BT Sync"></a>在VPS上部署BT Sync</h2><p>由于Sync需要至少有一个同步节点处在运行状态方可进行数据同步，在24小时不间断运行的VPS上部署Sync正好满足了这一需求。</p>
+<p>通过SSH登录VPS，下载并解压Sync，下载连接从Sync官网获取；</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">wget https://download-cdn.getsync.com/stable/linux-glibc-i386/BitTorrent-Sync_glibc23_i386.tar.gz</div><div class="line">tar zxvf BitTorrent-Sync_glibc23_i386.tar.gz</div></pre></td></tr></table></figure>
+<p>创建Sync配置模板文件；</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./btsync --dump-sample-config &gt; btsync.conf</div></pre></td></tr></table></figure>
+<p>vim打开配置模板文件，并按i键进入编辑模式；</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vi btsync.conf</div></pre></td></tr></table></figure>
+<p>配置文件如下，修改<strong>设备名称</strong>和Web UI的<strong>访问地址</strong>，设置登录Web UI的<strong>用户名</strong>和<strong>密码</strong>；</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">   "device_name": "VPS",  //设备名</div><div class="line">// "listening_port" : 0, // 0 - randomize port</div><div class="line"></div><div class="line">/* storage_path dir contains auxilliary app files if no storage_path field: .sync dir created in current working directory */</div><div class="line">// "storage_path" : "/home/user/.sync",</div><div class="line"></div><div class="line">/* set location of pid file */</div><div class="line">// "pid_file" : "/var/run/btsync/btsync.pid",</div><div class="line"></div><div class="line">/* use UPnP for port mapping */</div><div class="line">  "use_upnp" : true,</div><div class="line"></div><div class="line">/* limits in kB/s. 0 - no limit */</div><div class="line">  "download_limit" : 0,</div><div class="line">  "upload_limit" : 0,</div><div class="line"></div><div class="line">/* proxy configuration */</div><div class="line">// "proxy_type" : "socks4", // Valid types: "socks4", "socks5", "http_connect". Any other value means no proxy</div><div class="line">// "proxy_addr" : "192.168.1.2", // IP address of proxy server.</div><div class="line">// "proxy_port" : 1080,</div><div class="line">// "proxy_auth" : false, // Use authentication for proxy. Note: only username/password for socks5 (RFC 1929) is supported, and it is not really secure</div><div class="line">// "proxy_username" : "user",</div><div class="line">// "proxy_password" : "password",</div><div class="line"></div><div class="line">  "webui" :</div><div class="line">  &#123;</div><div class="line">    "listen" : "x.x.x.x:8888" //Web UI的访问地址，x.x.x.x改为VPS公网地址</div><div class="line"></div><div class="line">/* preset credentials. Use password or password_hash */</div><div class="line">  ,"login" : "username"  //Web UI用户名</div><div class="line">  ,"password" : "password"  //Web UI密码</div><div class="line">//  ,"password_hash" : "some_hash" // password hash in crypt(3) format</div><div class="line">//  ,"allow_empty_password" : false // Defaults to true</div><div class="line">/* ssl configuration */</div><div class="line">//  ,"force_https" : true // disable http</div><div class="line">//  ,"ssl_certificate" : "/path/to/cert.pem"</div><div class="line">//  ,"ssl_private_key" : "/path/to/private.key"</div><div class="line"></div><div class="line">/* directory_root path defines where the WebUI Folder browser starts (linux only). Default value is / */</div><div class="line">//  ,"directory_root" : "/home/user/MySharedFolders/"</div><div class="line"></div><div class="line">/* directory_root_policy defines how directory_root is used (linux only).</div><div class="line">   Valid values are:</div><div class="line">     "all" - accepts directory_root and its subdirectories for 'getdir' and 'adddir' actions</div><div class="line">     "belowroot" - accepts directory_root's subdirectories for 'getdir' and 'adddir' actions,</div><div class="line">     but denies attempts to use 'adddir' to create directories directly within directory_root</div><div class="line">   Default value is "all". */</div><div class="line">//  ,"directory_root_policy" : "all"</div><div class="line"></div><div class="line">/* dir_whitelist defines which directories can be shown to user or have folders added (linux only)</div><div class="line">   relative paths are relative to directory_root setting */</div><div class="line">//  ,"dir_whitelist" : [ "/home/user/MySharedFolders/personal", "work" ]</div><div class="line">  &#125;</div><div class="line"></div><div class="line">/* !!! if you set shared folders in config file WebUI will be DISABLED !!!</div><div class="line">   shared directories specified in config file  override the folders previously added from WebUI. */</div><div class="line">/*,</div><div class="line">  "shared_folders" :</div><div class="line">  [</div><div class="line">    &#123;</div><div class="line">      "secret" : "MY_SECRET_1", // required field - use --generate-secret in command line to create new secret</div><div class="line">      "dir" : "/home/user/bittorrent/sync_test", // * required field</div><div class="line">      "use_relay_server" : true, //  use relay server when direct connection fails</div><div class="line">      "use_tracker" : true,</div><div class="line">      "use_dht" : false,</div><div class="line">      "search_lan" : true,</div><div class="line">      "use_sync_trash" : true, // enable SyncArchive to store files deleted on remote devices</div><div class="line">      "overwrite_changes" : false, // restore modified files to original version, ONLY for Read-Only folders</div><div class="line">      "known_hosts" : // specify hosts to attempt connection without additional search</div><div class="line">      [</div><div class="line">        "192.168.1.2:44444"</div><div class="line">      ]</div><div class="line">    &#125;</div><div class="line">  ]</div><div class="line">*/</div><div class="line"></div><div class="line">/* Advanced preferences can be added to config file. Info is available at "http://help.getsync.com/customer/portal/articles/1902048-sync-advanced-preferences--more-options"</div><div class="line">For example see folder_rescan_interval below */</div><div class="line">//, "folder_rescan_interval" : "86400"</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>运行Sync；</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./btsync --config btsync.conf</div></pre></td></tr></table></figure>
+<p>在浏览器地址栏输入之前配置的Web UI地址，并通过用户名和密码登录Web UI，点击右上角设置按钮，点击<strong>『Perfrences』</strong>讲语言切换为简体中文；</p>
+<p><img src="http://ac-wyatmm3p.clouddn.com/RTyRuZJ272jMMD83DYLtHNC.png" alt="image"></p>
+<p>刷新页面后，点击<strong>『添加文件夹』</strong>来指定一个同步文件存放路径，并可以通过<strong>链接</strong>、<strong>密钥</strong>、<strong>二维码</strong>等进行共享，这三种共享行为均可以指定以<strong>只读</strong>或<strong>读写</strong>2种方式进行共享，只读方式的分享只能获取同步文件夹中的数据，其中的修改不会同步到其他节点。</p>
+<p><img src="http://ac-wyatmm3p.clouddn.com/E3grYWA1kEjlMHj8iZb3MyC.png" alt="image"></p>
+<p>以Mac客户端为例，点击『添加文件夹』右边的倒三角，输入密钥或链接地址，将上一步复制的密钥粘贴到输入框并指定本地同步文件夹的存放位置，即可开始同步。</p>
+<p><img src="http://ac-wyatmm3p.clouddn.com/8zvT36I5hQbP1EXjZ8aDE6C.png" alt="image"></p>
+<p>至此整个同步平台搭建完毕，BT Sync有很多优势，但也并不完美。由于Sync在国内的知名度并不高，而BT协议又要求至少有一个同步节点在线才可进行同步，倘若资源的热度（节点数）很低，并不能保证稳定快速地分享文件。然而瑕不掩瑜，分布式的理念、人人为我，我为人人的共享精神，相信某一天，Sync能和BitTorrent一样得到普及，也期待它能有更多更好的新特性。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/linux/" rel="tag">#linux</a>
+          
+            <a href="/tags/VPS/" rel="tag">#VPS</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/01/30/测试文章/" rel="next" title="测试文章">
+                <i class="fa fa-chevron-left"></i> 测试文章
+              </a>
+            
+          </div>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2016/02/03/Linux-VPS利用BT-Sync搭建私有云服务/"
+           data-title="Linux VPS利用BT Sync搭建私有云服务" data-url="http://reask.xyz/2016/02/03/Linux-VPS利用BT-Sync搭建私有云服务/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel ">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/avatar.png"
+               alt="Recover" />
+          <p class="site-author-name" itemprop="name">Recover</p>
+          <p class="site-description motion-element" itemprop="description">Winter is coming.</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/archives">
+              <span class="site-state-item-count">4</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/Re-cover" target="_blank" title="Github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  Github
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/banxaime" target="_blank" title="微博">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  微博
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.zhihu.com/people/Recover" target="_blank" title="知乎">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  知乎
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+      </section>
+
+      
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+            
+              
+            
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#BT-Sync功能介绍"><span class="nav-number">1.</span> <span class="nav-text">BT Sync功能介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在VPS上部署BT-Sync"><span class="nav-number">2.</span> <span class="nav-text">在VPS上部署BT Sync</span></a></li></ol></div>
+            
+          </div>
+        </section>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2016</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Recover</span>
+</div>
+
+<div class="powered-by">
+  由 <a class="theme-link" href="http://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/vendors/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/vendors/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/vendors/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.0.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.0.1"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.0.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.0.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.0.1"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"recover"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    <script src="/vendors/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

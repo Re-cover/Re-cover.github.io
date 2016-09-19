@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>ask·xyz</title>
+  
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="http://reask.xyz/"/>
+  <updated>2016-07-24T18:24:42.000Z</updated>
+  <id>http://reask.xyz/</id>
+  
+  <author>
+    <name>Recover</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Linux VPS利用BT Sync搭建私有云服务</title>
+    <link href="http://reask.xyz/2016/02/03/Linux-VPS%E5%88%A9%E7%94%A8BT-Sync%E6%90%AD%E5%BB%BA%E7%A7%81%E6%9C%89%E4%BA%91%E6%9C%8D%E5%8A%A1/"/>
+    <id>http://reask.xyz/2016/02/03/Linux-VPS利用BT-Sync搭建私有云服务/</id>
+    <published>2016-02-03T04:50:23.000Z</published>
+    <updated>2016-07-24T18:24:42.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>云端、网盘，如今的人们对于这些字眼早已不再陌生，利用云服务来存储和分享数据资料、衔接工作生活点滴，逐步成为了人们的日常。而墙外网盘的访问速度慢、 墙内网盘的各项『条款』和『政策』更是让个人隐私和随意分享无法得到保障。倘若你有上述苦恼，私有云服务让你多了一个选择。</p>
+<a id="more"></a>
+<h2 id="BT-Sync功能介绍"><a href="#BT-Sync功能介绍" class="headerlink" title="BT Sync功能介绍"></a>BT Sync功能介绍</h2><p><strong>BT Sync</strong>是一款由<a href="http://www.bittorrent.com/" target="_blank" rel="external">BitTorrent公司</a>开发的采用BT协议进行文件传输的同步工具，桌面端支持Windows、Mac OS、Linux、FreeBSD，移动端支持iOS、Android、WP，NAS端支持Syology、QNAP等平台。用户几乎可以在任意平台创建同步文件夹进行同步和分享。Sync可以找到设备间最短的通讯路线，假设2台设备均处于同一局域网内，数据的传输将不经过外网，传输速度大大提高。对于已存在文件的修改，Sync将进行增量同步，而不是重新同步整个文件，极大的提升了大文件的同步速度。由于使用BT协议进行数据传输，不会有中心服务器存储用户数据，节点间的数据传输通过加密，只要不泄露同步的密钥，数据不会被截取或审查，安全与隐私得到保障。</p>
+<h2 id="在VPS上部署BT-Sync"><a href="#在VPS上部署BT-Sync" class="headerlink" title="在VPS上部署BT Sync"></a>在VPS上部署BT Sync</h2><p>由于Sync需要至少有一个同步节点处在运行状态方可进行数据同步，在24小时不间断运行的VPS上部署Sync正好满足了这一需求。</p>
+<p>通过SSH登录VPS，下载并解压Sync，下载连接从Sync官网获取；</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">wget https://download-cdn.getsync.com/stable/linux-glibc-i386/BitTorrent-Sync_glibc23_i386.tar.gz</div><div class="line">tar zxvf BitTorrent-Sync_glibc23_i386.tar.gz</div></pre></td></tr></table></figure>
+<p>创建Sync配置模板文件；</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./btsync --dump-sample-config &gt; btsync.conf</div></pre></td></tr></table></figure>
+<p>vim打开配置模板文件，并按i键进入编辑模式；</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">vi btsync.conf</div></pre></td></tr></table></figure>
+<p>配置文件如下，修改<strong>设备名称</strong>和Web UI的<strong>访问地址</strong>，设置登录Web UI的<strong>用户名</strong>和<strong>密码</strong>；</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">   "device_name": "VPS",  //设备名</div><div class="line">// "listening_port" : 0, // 0 - randomize port</div><div class="line"></div><div class="line">/* storage_path dir contains auxilliary app files if no storage_path field: .sync dir created in current working directory */</div><div class="line">// "storage_path" : "/home/user/.sync",</div><div class="line"></div><div class="line">/* set location of pid file */</div><div class="line">// "pid_file" : "/var/run/btsync/btsync.pid",</div><div class="line"></div><div class="line">/* use UPnP for port mapping */</div><div class="line">  "use_upnp" : true,</div><div class="line"></div><div class="line">/* limits in kB/s. 0 - no limit */</div><div class="line">  "download_limit" : 0,</div><div class="line">  "upload_limit" : 0,</div><div class="line"></div><div class="line">/* proxy configuration */</div><div class="line">// "proxy_type" : "socks4", // Valid types: "socks4", "socks5", "http_connect". Any other value means no proxy</div><div class="line">// "proxy_addr" : "192.168.1.2", // IP address of proxy server.</div><div class="line">// "proxy_port" : 1080,</div><div class="line">// "proxy_auth" : false, // Use authentication for proxy. Note: only username/password for socks5 (RFC 1929) is supported, and it is not really secure</div><div class="line">// "proxy_username" : "user",</div><div class="line">// "proxy_password" : "password",</div><div class="line"></div><div class="line">  "webui" :</div><div class="line">  &#123;</div><div class="line">    "listen" : "x.x.x.x:8888" //Web UI的访问地址，x.x.x.x改为VPS公网地址</div><div class="line"></div><div class="line">/* preset credentials. Use password or password_hash */</div><div class="line">  ,"login" : "username"  //Web UI用户名</div><div class="line">  ,"password" : "password"  //Web UI密码</div><div class="line">//  ,"password_hash" : "some_hash" // password hash in crypt(3) format</div><div class="line">//  ,"allow_empty_password" : false // Defaults to true</div><div class="line">/* ssl configuration */</div><div class="line">//  ,"force_https" : true // disable http</div><div class="line">//  ,"ssl_certificate" : "/path/to/cert.pem"</div><div class="line">//  ,"ssl_private_key" : "/path/to/private.key"</div><div class="line"></div><div class="line">/* directory_root path defines where the WebUI Folder browser starts (linux only). Default value is / */</div><div class="line">//  ,"directory_root" : "/home/user/MySharedFolders/"</div><div class="line"></div><div class="line">/* directory_root_policy defines how directory_root is used (linux only).</div><div class="line">   Valid values are:</div><div class="line">     "all" - accepts directory_root and its subdirectories for 'getdir' and 'adddir' actions</div><div class="line">     "belowroot" - accepts directory_root's subdirectories for 'getdir' and 'adddir' actions,</div><div class="line">     but denies attempts to use 'adddir' to create directories directly within directory_root</div><div class="line">   Default value is "all". */</div><div class="line">//  ,"directory_root_policy" : "all"</div><div class="line"></div><div class="line">/* dir_whitelist defines which directories can be shown to user or have folders added (linux only)</div><div class="line">   relative paths are relative to directory_root setting */</div><div class="line">//  ,"dir_whitelist" : [ "/home/user/MySharedFolders/personal", "work" ]</div><div class="line">  &#125;</div><div class="line"></div><div class="line">/* !!! if you set shared folders in config file WebUI will be DISABLED !!!</div><div class="line">   shared directories specified in config file  override the folders previously added from WebUI. */</div><div class="line">/*,</div><div class="line">  "shared_folders" :</div><div class="line">  [</div><div class="line">    &#123;</div><div class="line">      "secret" : "MY_SECRET_1", // required field - use --generate-secret in command line to create new secret</div><div class="line">      "dir" : "/home/user/bittorrent/sync_test", // * required field</div><div class="line">      "use_relay_server" : true, //  use relay server when direct connection fails</div><div class="line">      "use_tracker" : true,</div><div class="line">      "use_dht" : false,</div><div class="line">      "search_lan" : true,</div><div class="line">      "use_sync_trash" : true, // enable SyncArchive to store files deleted on remote devices</div><div class="line">      "overwrite_changes" : false, // restore modified files to original version, ONLY for Read-Only folders</div><div class="line">      "known_hosts" : // specify hosts to attempt connection without additional search</div><div class="line">      [</div><div class="line">        "192.168.1.2:44444"</div><div class="line">      ]</div><div class="line">    &#125;</div><div class="line">  ]</div><div class="line">*/</div><div class="line"></div><div class="line">/* Advanced preferences can be added to config file. Info is available at "http://help.getsync.com/customer/portal/articles/1902048-sync-advanced-preferences--more-options"</div><div class="line">For example see folder_rescan_interval below */</div><div class="line">//, "folder_rescan_interval" : "86400"</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>运行Sync；</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">./btsync --config btsync.conf</div></pre></td></tr></table></figure>
+<p>在浏览器地址栏输入之前配置的Web UI地址，并通过用户名和密码登录Web UI，点击右上角设置按钮，点击<strong>『Perfrences』</strong>讲语言切换为简体中文；</p>
+<p><img src="http://ac-wyatmm3p.clouddn.com/RTyRuZJ272jMMD83DYLtHNC.png" alt="image"></p>
+<p>刷新页面后，点击<strong>『添加文件夹』</strong>来指定一个同步文件存放路径，并可以通过<strong>链接</strong>、<strong>密钥</strong>、<strong>二维码</strong>等进行共享，这三种共享行为均可以指定以<strong>只读</strong>或<strong>读写</strong>2种方式进行共享，只读方式的分享只能获取同步文件夹中的数据，其中的修改不会同步到其他节点。</p>
+<p><img src="http://ac-wyatmm3p.clouddn.com/E3grYWA1kEjlMHj8iZb3MyC.png" alt="image"></p>
+<p>以Mac客户端为例，点击『添加文件夹』右边的倒三角，输入密钥或链接地址，将上一步复制的密钥粘贴到输入框并指定本地同步文件夹的存放位置，即可开始同步。</p>
+<p><img src="http://ac-wyatmm3p.clouddn.com/8zvT36I5hQbP1EXjZ8aDE6C.png" alt="image"></p>
+<p>至此整个同步平台搭建完毕，BT Sync有很多优势，但也并不完美。由于Sync在国内的知名度并不高，而BT协议又要求至少有一个同步节点在线才可进行同步，倘若资源的热度（节点数）很低，并不能保证稳定快速地分享文件。然而瑕不掩瑜，分布式的理念、人人为我，我为人人的共享精神，相信某一天，Sync能和BitTorrent一样得到普及，也期待它能有更多更好的新特性。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;云端、网盘，如今的人们对于这些字眼早已不再陌生，利用云服务来存储和分享数据资料、衔接工作生活点滴，逐步成为了人们的日常。而墙外网盘的访问速度慢、 墙内网盘的各项『条款』和『政策』更是让个人隐私和随意分享无法得到保障。倘若你有上述苦恼，私有云服务让你多了一个选择。&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="折腾" scheme="http://reask.xyz/categories/%E6%8A%98%E8%85%BE/"/>
+    
+    
+      <category term="linux" scheme="http://reask.xyz/tags/linux/"/>
+    
+      <category term="VPS" scheme="http://reask.xyz/tags/VPS/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>测试文章</title>
+    <link href="http://reask.xyz/2016/01/30/%E6%B5%8B%E8%AF%95%E6%96%87%E7%AB%A0/"/>
+    <id>http://reask.xyz/2016/01/30/测试文章/</id>
+    <published>2016-01-30T15:57:56.000Z</published>
+    <updated>2016-07-25T15:22:22.000Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="English-Test"><a href="#English-Test" class="headerlink" title="English Test"></a>English Test</h2><blockquote>
+<p>Night gathers, and now my watch begins. It shall not end until my death. I shall take no wife, hold no lands, father no children. I shall wear no crowns and win no glory. I shall live and die at my post. I am the sword in the darkness. I am the watcher on the walls. I am the fire that burns against the cold, the light that brings the dawn, the horn that wakes the sleepers, the shield that guards the realms of men. I pledge my life and honor to the Night’s Watch, for this night and all the nights to come.</p>
+</blockquote>
+<a id="more"></a>
+<h2 id="中文测试"><a href="#中文测试" class="headerlink" title="中文测试"></a>中文测试</h2><blockquote>
+<p>永夜终至，吾辈铭记，巍巍大任，死亦无终。无享妻爱，不履寸土，决绝子嗣，身归兄弟。何言无冕，兄弟所望，何争俗荣，袍泽同心。尽忠职守，生死于斯，心念所归，无惧无退。铸兵利剑，暗夜无当；凝聚础石，长城屹立；腾焰熊熊，炽烈华光；耀耀破晓，璨以晨光；鸣无尽之号角，警外患之袭扰；锻坚钢之神盾，固王国之永宁。于今挺身，奉以生命，以夜为始，死亦无终。</p>
+</blockquote>
+<h2 id="图片测试"><a href="#图片测试" class="headerlink" title="图片测试"></a>图片测试</h2><p><img src="http://ac-wyatmm3p.clouddn.com/wnBDzJRYknD9QDckZLk7JHB.jpg" alt="image"></p>
+<h2 id="代码块测试"><a href="#代码块测试" class="headerlink" title="代码块测试"></a>代码块测试</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></div><div class="line">&#123;</div><div class="line">    <span class="built_in">printf</span>(<span class="string">"Winter is coming."</span>);</div><div class="line">    <span class="keyword">return</span> <span class="number">0</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h2 id="音乐测试"><a href="#音乐测试" class="headerlink" title="音乐测试"></a>音乐测试</h2><iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width="330" height="86" src="http://music.163.com/outchain/player?type=2&id=26664325&auto=1&height=66"></iframe>
+
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;English-Test&quot;&gt;&lt;a href=&quot;#English-Test&quot; class=&quot;headerlink&quot; title=&quot;English Test&quot;&gt;&lt;/a&gt;English Test&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;Night gathers, and now my watch begins. It shall not end until my death. I shall take no wife, hold no lands, father no children. I shall wear no crowns and win no glory. I shall live and die at my post. I am the sword in the darkness. I am the watcher on the walls. I am the fire that burns against the cold, the light that brings the dawn, the horn that wakes the sleepers, the shield that guards the realms of men. I pledge my life and honor to the Night’s Watch, for this night and all the nights to come.&lt;/p&gt;
+&lt;/blockquote&gt;
+    
+    </summary>
+    
+      <category term="测试" scheme="http://reask.xyz/categories/%E6%B5%8B%E8%AF%95/"/>
+    
+    
+      <category term="测试" scheme="http://reask.xyz/tags/%E6%B5%8B%E8%AF%95/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>孤独的美食家</title>
+    <link href="http://reask.xyz/2015/08/09/%E5%AD%A4%E7%8B%AC%E7%9A%84%E7%BE%8E%E9%A3%9F%E5%AE%B6/"/>
+    <id>http://reask.xyz/2015/08/09/孤独的美食家/</id>
+    <published>2015-08-09T05:02:39.000Z</published>
+    <updated>2016-07-24T18:15:58.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>由于工作的缘故，暑假暂时寄住在姨妈家，这是她们一家三口去美国旅游的第一个周末。之前想着，一个人在家多自由呀，工作的时候想加班就加班，晚上也不用担心吵到别人，想多晚睡就多晚睡。</p>
+<p>不曾想到，一个人住多难熬。</p>
+<a id="more"></a>
+<p>每天8、9点回家，再也不用喊一句“我回来啦！”，默默关门，反锁，洗澡，睡觉。偶尔看到段子傻笑一会，马上意识到连个分享的人也没有。</p>
+<p>昨天周六，不太想炒菜，其实也并没有加厨艺的技能点，担心炒了也难以下咽。上知乎搜了一下有哪些方便一个人做来吃的东西，于是用电饭煲做了一锅煲仔饭，午餐和晚餐的分量。</p>
+<p><img src="http://ac-wyatmm3p.clouddn.com/zj86w1HYrLmatQnxeXwtP9C.jpg" alt="image"></p>
+<p>不好看，但是味道还可以，可能是自己做的饭哭着也要吃完吧哈哈~</p>
+<p>今天出门剪头发，顺路去肯德基打包了一个翅桶回来，想着以我的战斗力，这点东西只够塞牙缝。结果回来吃到一半就已经觉得饱了，盖好盖子，放进冰箱。要是你在，或许就不用留到晚上了吧。</p>
+<p><img src="http://ac-wyatmm3p.clouddn.com/mEn6efN3VDQjsIIyjVdaHtB.jpg" alt="image"></p>
+<p>越是寂寞，越是想在社交网络引起别人的注意。呼朋引伴也好，晒图求赞也罢，总归是心里不够平静。</p>
+<p>人们都是在孤独中努力奋斗，只有偶尔才互相陪伴。更何况一个人的孤独总好过在人群中的孤独。这么想着，心里稍稍有了些安慰。</p>
+<p>上一次这么矫情是什么时候，不太记得了。</p>
+<p>只希望孤独奋斗着的人们，不要因为一个人就将就着过，不亏待自己，才能爱己爱人。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;由于工作的缘故，暑假暂时寄住在姨妈家，这是她们一家三口去美国旅游的第一个周末。之前想着，一个人在家多自由呀，工作的时候想加班就加班，晚上也不用担心吵到别人，想多晚睡就多晚睡。&lt;/p&gt;
+&lt;p&gt;不曾想到，一个人住多难熬。&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="树洞" scheme="http://reask.xyz/categories/%E6%A0%91%E6%B4%9E/"/>
+    
+    
+      <category term="树洞" scheme="http://reask.xyz/tags/%E6%A0%91%E6%B4%9E/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>Hello world!</title>
+    <link href="http://reask.xyz/2015/08/03/Hello%20World/"/>
+    <id>http://reask.xyz/2015/08/03/Hello World/</id>
+    <published>2015-08-03T01:24:11.000Z</published>
+    <updated>2016-01-30T18:10:00.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>前不久在被推荐了一款十分简洁优雅的<strong>Markdown</strong>编辑器–<strong><a href="http://typora.io/" target="_blank" rel="external">Typora</a></strong>，立马中毒不浅。</p>
+<p>Typora与其他Markdown编辑器相比，最大的不同在于取消了预览窗口，直接在编辑窗口实时生成预览效果，真正实现了所见即所得，逼格满满，效果拔群。终于可以优(zhuang)雅(bi)地做笔记了，想想还有些小激动。</p>
+<p>平常习惯使用印象笔记写点东西来整理思路，Typora对印象笔记的支持并不好。笔记若放在本地又不方便查看，伴随印象笔记越发臃肿的体型，以及被“有关部门”阉割的分享功能，让我只能跟他道一声再见。</p>
+<a id="more"></a>
+<p>其实很早就想建立一个自己的独立域名博客，哪怕无人访问，当做自己的树洞也是好的。之前考试，私活，找实习，时间确实不多，加上自己的拖延症晚期，一直没能实现，直到我遇上了<strong><a href="https://hexo.io/" target="_blank" rel="external">hexo</a></strong>，我知道那就是我想要的<del>滑板鞋</del>。</p>
+<p>hexo是一款基于Node.js的博客框架，具有以下特性：</p>
+<blockquote>
+<ul>
+<li>Blazing fast generating</li>
+<li>Support for GitHub Flavored Markdown and most Octopress plugins</li>
+<li>One-command deploy to GitHub Pages, Heroku, etc.</li>
+<li>Powerful plugin system</li>
+</ul>
+</blockquote>
+<p>总而言之就是构建速度快、支持Github风格的Markdown和绝大部分的Octopress插件、一条指令即可将页面部署到Github Pages、Heroku等平台以及强大的插件系统。</p>
+<p>博客搭建过程略过不表，网上有大把的教程。使用之后hexo确实没有让人失望。</p>
+<ol>
+<li><p>简单快捷的发布。hexo没有繁杂的后台，只要你在本地的博客目录下<code>hexo n &quot;文章名称&quot;</code>，就可以新建一个.md格式的文本文档，编辑完之后，键入<code>hexo d -g</code>即可将Markdown文档编译生成html的静态页面并发布。</p>
+</li>
+<li><p>部署在Github。静态页面全部托管在Github Pages中，既省去了主机的费用，又免除了搭建运行环境的烦恼，再加上Github的无限流量和cdn加速，已经远远超过了良心二字。</p>
+</li>
+<li><p>完善的插件。所有支持hexo的<a href="https://github.com/hexojs/hexo/wiki/Plugins" target="_blank" rel="external">插件</a>。</p>
+</li>
+</ol>
+<p><strong>Github + hexo +  Markdown + 独立域名</strong>这一模式，完整地诠释了什么叫小而美，倘若你也有搭建轻量化独立博客的想法，我墙裂推荐上述方案，你不会后悔。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;前不久在被推荐了一款十分简洁优雅的&lt;strong&gt;Markdown&lt;/strong&gt;编辑器–&lt;strong&gt;&lt;a href=&quot;http://typora.io/&quot;&gt;Typora&lt;/a&gt;&lt;/strong&gt;，立马中毒不浅。&lt;/p&gt;
+&lt;p&gt;Typora与其他Markdown编辑器相比，最大的不同在于取消了预览窗口，直接在编辑窗口实时生成预览效果，真正实现了所见即所得，逼格满满，效果拔群。终于可以优(zhuang)雅(bi)地做笔记了，想想还有些小激动。&lt;/p&gt;
+&lt;p&gt;平常习惯使用印象笔记写点东西来整理思路，Typora对印象笔记的支持并不好。笔记若放在本地又不方便查看，伴随印象笔记越发臃肿的体型，以及被“有关部门”阉割的分享功能，让我只能跟他道一声再见。&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="Hello World!" scheme="http://reask.xyz/categories/Hello-World/"/>
+    
+    
+      <category term="Hello World!" scheme="http://reask.xyz/tags/Hello-World/"/>
+    
+  </entry>
+  
+</feed>
